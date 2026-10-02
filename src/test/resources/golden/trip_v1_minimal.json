@@ -1,0 +1,1 @@
+{"schema":1,"tripId":"trip-abc","vehicleId":"veh-01","batteryId":"DUMMY-veh-01","batteryIdSource":"dummy","startedAt":"2026-10-02T08:00:00.000Z","endedAt":"2026-10-02T09:00:00.000Z","odometerStartKm":0.0,"odometerEndKm":1.0,"distanceKm":1.0,"energyConsumedKwh":0.2,"energyRegenKwh":0.0,"energyNetKwh":0.2}

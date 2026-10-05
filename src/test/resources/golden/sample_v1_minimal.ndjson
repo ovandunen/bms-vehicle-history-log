@@ -1,1 +1,0 @@
-{"schema":1,"ts":"2026-10-02T08:15:30.123Z","vehicleId":"veh-01","batteryId":"DUMMY-veh-01","batteryIdSource":"dummy","tripId":"trip-abc","odometerKm":0.0,"tripKm":0.0,"energyConsumedKwh":0.0,"energyRegenKwh":0.0,"batteryDataStale":false}

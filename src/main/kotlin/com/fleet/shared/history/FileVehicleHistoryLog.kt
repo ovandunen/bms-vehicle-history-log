@@ -58,26 +58,22 @@ class FileVehicleHistoryLog(
         return true
     }
 
+    override fun lastGpsDistanceKm(vin: String, day: LocalDate): Double? {
+        val open = root.resolve(vin).resolve("$day.geojsonl")
+        if (!open.exists()) return null
+        val last = readOpenDay(open).valid.lastOrNull() ?: return null
+        return GeoJson.gpsDistanceKm(last)
+    }
+
     private fun closeOpenFile(open: Path): Int {
-        val lines = open.readLines()
-        val valid = ArrayList<String>(lines.size)
-        var skipped = 0
-        for ((index, line) in lines.withIndex()) {
-            if (line.isEmpty()) continue
-            if (GeoJson.isJson(line)) {
-                valid += line
-            } else if (index == lines.lastIndex) {
-                skipped++
-            } else {
-                error("invalid history line in $open")
-            }
-        }
+        val text = readOpenDay(open)
+        val valid = text.valid
         val closed = open.resolveSibling(open.name.removeSuffix(".geojsonl") + ".geojson")
         val tmp = open.resolveSibling(closed.name + ".partial")
         Files.writeString(tmp, GeoJson.featureCollection(valid) + "\n")
         Files.move(tmp, closed, StandardCopyOption.ATOMIC_MOVE)
         Files.delete(open)
-        return skipped
+        return text.skipped
     }
 
     private fun appendLine(file: Path, line: String) {
@@ -97,6 +93,25 @@ class FileVehicleHistoryLog(
             }
         }
     }
+}
+
+internal class OpenDayText(val valid: List<String>, val skipped: Int)
+
+internal fun readOpenDay(open: Path): OpenDayText {
+    val lines = open.readLines()
+    val valid = ArrayList<String>(lines.size)
+    var skipped = 0
+    for ((index, line) in lines.withIndex()) {
+        if (line.isEmpty()) continue
+        if (GeoJson.isJson(line)) {
+            valid += line
+        } else if (index == lines.lastIndex) {
+            skipped++
+        } else {
+            error("invalid history line in $open")
+        }
+    }
+    return OpenDayText(valid, skipped)
 }
 
 internal fun dayOf(path: Path): LocalDate =

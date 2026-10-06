@@ -7,6 +7,9 @@ import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonNull
 import kotlinx.serialization.json.JsonPrimitive
 import kotlinx.serialization.json.buildJsonObject
+import kotlinx.serialization.json.doubleOrNull
+import kotlinx.serialization.json.jsonObject
+import kotlinx.serialization.json.jsonPrimitive
 import kotlinx.serialization.json.put
 
 internal object GeoJson {
@@ -63,4 +66,13 @@ internal object GeoJson {
         } catch (_: Exception) {
             false
         }
+
+    fun gpsDistanceKm(line: String): Double? {
+        val value = json.parseToJsonElement(line).jsonObject["properties"]
+            ?.jsonObject
+            ?.get("gps_distance_km")
+            ?: return null
+        if (value is JsonNull) return null
+        return value.jsonPrimitive.doubleOrNull
+    }
 }
